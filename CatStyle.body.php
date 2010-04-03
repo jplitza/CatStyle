@@ -1,30 +1,19 @@
 <?php
-class ShortCategoryPage extends CategoryPage {
-    function view() {
-        global $wgHooks;
-        $wgHooks['CategoryPageView'] = array_filter($wgHooks['CategoryPageView'], create_function('$val', 'return $val != "wfHook";'));
-        parent::view();
-        return false;
-    }
-
+class CatStyleCategoryPage extends CategoryPage {
     function closeShowCategory() {
         global $wgOut, $wgRequest;
         $from = $wgRequest->getVal( 'from' );
         $until = $wgRequest->getVal( 'until' );
 
-        $viewer = new ShortCategoryViewer( $this->mTitle, $from, $until );
+        $viewer = new CatStyleCategoryViewer( $this->mTitle, $from, $until );
         $wgOut->addHTML( $viewer->getHTML() );
     }
 }
 
-class ShortCategoryViewer extends CategoryViewer {
-    protected $cat;
+global $wgCatStyleBase;
+eval("class CatStyleCategoryViewerWrapper extends $wgCatStyleBase {};");
 
-    function __construct( $title, $from = '', $until = '' ) {
-        parent::__construct( $title, $from, $until );
-        $this->cat = Category::newFromTitle( $title );
-    }
-
+class CatStyleCategoryViewer extends CatStyleCategoryViewerWrapper {
     function formatList( $articles, $articles_start_char, $cutoff = 6 ) {
         global $wgCategorySettings;
         if( !$wgCategorySettings['short'] )
@@ -48,7 +37,7 @@ class ShortCategoryViewer extends CategoryViewer {
 
         if( $rescnt > 0 ) {
             $r = "<div id=\"mw-pages\">\n";
-            $r = $this->formatList( $this->articles, $this->articles_start_char );
+            $r .= $this->formatList( $this->articles, $this->articles_start_char );
             $r .= "\n</div>";
         }
         return $r;

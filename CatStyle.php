@@ -1,11 +1,18 @@
 <?php
-$wgHooks['ParserFirstCallInit'][] = 'wfAddCatStyleTag';
-function wfAddCatStyleTag( &$parser ) {
-    $parser->setHook( 'catstyle', 'wfCatStyleTrigger' );
+
+if( !defined( 'MEDIAWIKI' ) ) {
+	echo( "This file is an extension to the MediaWiki software and cannot be used standalone.\n" );
+	die( 1 );
+}
+
+
+$wgHooks['ParserFirstCallInit'][] = 'efAddCatStyleTag';
+function efAddCatStyleTag( &$parser ) {
+    $parser->setHook( 'catstyle', 'efCatStyleTrigger' );
     return true;
 }
 
-function wfCatStyleTrigger( $input, $args, $parser, $frame = NULL ) {
+function efCatStyleTrigger( $input, $args, $parser, $frame = NULL ) {
     global $wgHooks, $wgCategorySettings;
     $parser->disableCache();
     if(!empty($args['nocols']))
@@ -17,16 +24,24 @@ function wfCatStyleTrigger( $input, $args, $parser, $frame = NULL ) {
     return '';
 }
 
-function wfHook($that) {
-    $a = new ShortCategoryPage($that->mTitle, $that->mOldId);
-    $a->view();
-    return false;
+function efCatStyleArticleFromTitle( &$title, &$article ) {
+    if(is_subclass_of($article, "CategoryPage")) {
+        global $wgCatStyleBase;
+        $tmp = str_replace('CategoryPage', 'CategoryViewer', get_class($article));
+        if(class_exists($tmp))
+            $wgCatStyleBase = $tmp;
+    }
+    if ( $title->getNamespace() == NS_CATEGORY ) {
+        $article = new CatStyleCategoryPage( $title );
+    }
+    return true;
 }
 
-$wgAutoloadClasses['ShortCategoryPage'] = dirname(__FILE__) . '/CatStyle.body.php';
-$wgAutoloadClasses['ShortCategoryViewer'] = dirname(__FILE__) . '/CatStyle.body.php';
-$wgHooks['CategoryPageView'][] = 'wfHook';
+$wgAutoloadClasses['CatStyleCategoryPage'] = dirname(__FILE__) . '/CatStyle.body.php';
+$wgAutoloadClasses['CatStyleCategoryViewer'] = dirname(__FILE__) . '/CatStyle.body.php';
+$wgHooks['ArticleFromTitle'][] = 'efCatStyleArticleFromTitle';
 
+$wgCatStyleBase = 'CategoryViewer';
 $wgCategorySettings = array(
   'short'    => false,
   'captions' => true,
