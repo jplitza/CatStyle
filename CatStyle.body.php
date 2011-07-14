@@ -68,7 +68,7 @@ class CatStyleCategoryViewer extends CatStyleCategoryViewerWrapper {
         }
     }
 
-    function columnList( $articles, $articles_start_char ) {
+    static function columnList( $articles, $articles_start_char ) {
         global $wgCategorySettings;
         if($wgCategorySettings['captions'])
             return parent::columnList($articles, $articles_start_char);
@@ -112,7 +112,7 @@ class CatStyleCategoryViewer extends CatStyleCategoryViewerWrapper {
         return $r;
     }
 
-    function shortList( $articles, $articles_start_char ) {
+    static function shortList( $articles, $articles_start_char ) {
         global $wgCategorySettings;
         if($wgCategorySettings['captions'])
             return parent::shortList($articles, $articles_start_char);
