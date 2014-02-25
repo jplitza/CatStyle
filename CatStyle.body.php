@@ -5,7 +5,7 @@ class CatStyleCategoryPage extends CategoryPage {
         $from = $wgRequest->getVal( 'from' );
         $until = $wgRequest->getVal( 'until' );
 
-        $viewer = new CatStyleCategoryViewer( $this->mTitle, $from, $until );
+        $viewer = new CatStyleCategoryViewer( $this->mTitle, $this->getContext(), $from, $until );
         $wgOut->addHTML( $viewer->getHTML() );
     }
 }
